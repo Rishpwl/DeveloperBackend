@@ -6,11 +6,14 @@ const app = express();
 // MongoDB connection URL
 const url = "mongodb+srv://rishabhporwal2001_db_user:ly4XdvzJmgbjEAs9@cluster0.9p0qnn4.mongodb.net/developBack";
 
-app.get('/hello',(req,res)=>{
-    res.send("hello from the server");
+app.get('/user',(req,res)=>{
+    res.send({firstname:"rishabh",lastName:"porwal"})
 })
-app.use((req,res)=>{
-    res.send("hello hello ")
+
+
+app.use('/',(req,res)=>{
+    res.send("first running....");
+    next();
 })
 //app.use(express.json());
 
