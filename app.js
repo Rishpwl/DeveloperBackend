@@ -6,15 +6,23 @@ const app = express();
 // MongoDB connection URL
 const url = "mongodb+srv://rishabhporwal2001_db_user:ly4XdvzJmgbjEAs9@cluster0.9p0qnn4.mongodb.net/developBack";
 
-app.get('/user',(req,res)=>{
-    res.send({firstname:"rishabh",lastName:"porwal"})
-})
 
 
-app.use('/',(req,res)=>{
-    res.send("first running....");
+app.use('/user',(req,res,next)=>{
+    console.log("handling the route user1!!!");
+    next();
+    res.send("Response 1 !!!");
+    
+},(req,res,next)=>{
+    console.log("handling the route user2!!!");
+    next();
+    //res.send("Response 2 !!!");
+},(req,res,next)=>{
+    console.log("handling the route user3!!!");
     next();
 })
+
+
 //app.use(express.json());
 
 // Connect to MongoDB
