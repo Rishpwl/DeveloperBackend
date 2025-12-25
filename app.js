@@ -1,45 +1,74 @@
 const express = require("express");
 const mongoose = require("mongoose");
-
+const connectDB=require('./config/database');
+const User=require('./models/user');
 const app = express();
 
-// MongoDB connection URL
-const url = "mongodb+srv://rishabhporwal2001_db_user:ly4XdvzJmgbjEAs9@cluster0.9p0qnn4.mongodb.net/developBack";
+app.use(express.json());
 
+app.post('/signup',async(req,res)=>{
+   try {
+    const { firstName, lastName, emailId, age, gender } = req.body;
 
+    // Validation
+    if (!firstName || !lastName || !emailId || !age || !gender) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required"
+      });
+    }
 
-app.use('/user',(req,res,next)=>{
-    console.log("handling the route user1!!!");
-    next();
-    res.send("Response 1 !!!");
-    
-},(req,res,next)=>{
-    console.log("handling the route user2!!!");
-    next();
-    //res.send("Response 2 !!!");
-},(req,res,next)=>{
-    console.log("handling the route user3!!!");
-    next();
+    const user = new User({
+      firstName,
+      lastName,
+      emailId,
+      age,
+      gender
+    });
+
+    await user.save();   // ✅ await
+
+    return res.status(201).json({
+      success: true,
+      message: "User registered successfully",
+      data: user
+    });
+
+  } catch (err) {
+    console.error(err);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error"
+    });
+  }
+
 })
 
 
-//app.use(express.json());
+app.get('/login',async(req,res)=>{
+    try{
+        const findUser=await User.find();
+        if(findUser){
+            res.status(201).send({
+                success:true,
+                message:"User data found successfully",
+                data:findUser
+            })
+        }
 
-// Connect to MongoDB
-mongoose.connect(url)
-  .then(() => {
-    console.log("MongoDB connected successfully");
-  })
-  .catch((err) => {
-    console.error("MongoDB connection error:", err);
-  });
+    }catch(err){
+        console.log(err);
+    }
+})
 
-// Test route
-app.get("/", (req, res) => {
-  res.send("Server is running and DB connected");
-});
-
-// Start server
-app.listen(3000, () => {
+connectDB().then(()=>{
+    console.log("database connection successfull");
+    app.listen(3000, () => {
   console.log("Server running on port 3000");
 });
+}).catch(err=>{
+    console.err("issues in db connection")
+})
+// Start server
+
